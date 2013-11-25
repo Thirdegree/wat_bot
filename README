@@ -1,0 +1,1 @@
+This bot responds to wat/what (Patterns matching "(?i)^[what?]+$") with a bolded quote of it's parent comment.
