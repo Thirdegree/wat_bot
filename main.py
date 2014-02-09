@@ -2,6 +2,10 @@ import praw
 import re
 from time import sleep
 from collections import deque
+import requests
+import HTMLParser
+
+h = HTMLParser.HTMLParser()
 
 r = praw.Reddit("Wat_bot v1.0 by /u/Thirdegree")
 
@@ -22,9 +26,13 @@ def main():
 	for post in comments:
 		if post.id not in done:
 			done.append(post.id)
-			if re.search("(?i)^[what?]+$", post.body) and post.parent.author.name:
+			if re.search("(?i)^[what?]+$", post.body) and post.parent_id:
 				print post.body
-				post.reply(">**"+post.parent.body+"**") #i have no idea if this works. Stupid internet won't give me an ip address
+				p = requests.get("http://www.reddit.com/api/info.json?id="+post.parent_id).json()
+				p = p['data']['children'][0]['data']['body'].strip()
+				p = h.unescape(p)
+				p = p.replace("\n\n>", "\n\n>>")
+				post.reply("He said:\n\n>"+p) #i have no idea if this works. Stupid internet won't give me an ip address
 				sleep(2)
 		
 running = True
